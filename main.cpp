@@ -6,6 +6,7 @@
 
 
 int main (int argc, char const *argv[]){
+  Testio myTestio;
   printf("Nombre de processeurs : %d \n",omp_get_num_procs());
   printf("Nombre de thread actifs : %d \n",omp_get_num_threads());
   int n;

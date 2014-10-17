@@ -10,6 +10,7 @@
 #define TESTIO_H
 
 #include "array2d.h" // Declaration of 2D-array
+#include <string>
 
 
 class Testio
@@ -17,6 +18,12 @@ class Testio
 public:
   /** Default constructor */
   Testio();
+  
+  /**
+   * Constructor from a file
+   * @param iFile: file containing the instance of the proble
+   */
+  Testio(std::string iFile);
   
   /** Destructor */
   ~Testio();
