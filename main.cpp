@@ -1,6 +1,10 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<omp.h>
+#include <stdio.h>   // Standard Input/Output Header
+#include <stdlib.h>  // C Standard General Utilities Library
+#include <omp.h>     // Open Multi-Processing Library
+
+#include "testio.h"  // Test Input/Output Header
+
+
 int main (int argc, char const *argv[]){
   printf("Nombre de processeurs : %d \n",omp_get_num_procs());
   printf("Nombre de thread actifs : %d \n",omp_get_num_threads());
