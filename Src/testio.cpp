@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <string.h>
+#include <string>
 
 Testio::Testio():
   _NbClients(0),

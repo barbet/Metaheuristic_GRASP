@@ -21,6 +21,12 @@ public:
   /** Destructor */
   ~Localisation();
   
+  /**
+   * Resize the array of factories. (/!\ DELETE THE WHOLE DATA IN THE ARRAY /!\)
+   * @param iNbFactories: new number of factories
+   */
+  void Resize(int iNbFactories);
+  
   /** Construction of the localisation */
   void Construction();
   

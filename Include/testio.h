@@ -10,6 +10,7 @@
 #define TESTIO_H
 
 #include "array2d.h"
+#include "localisation.h"
 #include <string>
 
 
@@ -33,6 +34,7 @@ private:
   int _NbFactories;               // Number of factories
   double* _aImplantationCost;     // Array of implantation costs of factories
   Array2d _ClientFactoryDistance; // Array of distances between clients and factories
+  Localisation _FactoryLoc;       // Array of chosen factories
 };
 
 #endif

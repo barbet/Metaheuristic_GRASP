@@ -19,6 +19,18 @@ Localisation::~Localisation()
     delete [] _aTab; _aTab=0;
 }
 
+void Localisation::Resize(int iNbFactories)
+{
+  if (_aTab)
+    delete [] _aTab; _aTab=0;
+  _NbFactories = iNbFactories;
+  if (_NbFactories>0)
+  {
+    _aTab = new double[_NbFactories];
+    memset(_aTab, 0, _NbFactories*sizeof(double));
+  }
+}
+
 void Localisation::Construction()
 {
   // TODO
