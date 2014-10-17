@@ -1,64 +1,54 @@
 #include "localisation.h"
 
-#include <string.h> // To use memset
+#include <string.h>
+#include <algorithm>
 
-Localisation::Localisation(int iNbFactories):
-  _NbFactories(iNbFactories),
-  _aTab(0)
+Localisation::Localisation():
+  _pInstance(0),
+  _aChosenFactories(0)
 {
-  if (_NbFactories)
-  {
-    _aTab = new bool[_NbFactories];
-    memset(_aTab, 0, _NbFactories*sizeof(bool));
+}
+
+
+Localisation::Localisation(Testio &iInstance, bool* iChosenFactories):
+  _pInstance(&iInstance),
+  _aChosenFactories(0)
+{
+  int nbFactories = _pInstance->NbFactories();
+  if (nbFactories) {
+    _aChosenFactories = new bool[nbFactories];
+    if (iChosenFactories)
+      memcpy(_aChosenFactories, iChosenFactories, nbFactories*sizeof(bool));
+    else
+      memset(_aChosenFactories, 0, nbFactories*sizeof(bool));
   }
 }
-  
+
+
 Localisation::~Localisation()
 {
-  if (_aTab)
-    delete [] _aTab; _aTab=0;
+  if (_aChosenFactories)
+    delete [] _aChosenFactories; _aChosenFactories=0;
+  _pInstance = 0;
 }
 
-void Localisation::Resize(int iNbFactories)
+
+double Localisation::MinDistance(int iClient)
 {
-  if (_aTab)
-    delete [] _aTab; _aTab=0;
-  _NbFactories = iNbFactories;
-  if (_NbFactories>0)
-  {
-    _aTab = new double[_NbFactories];
-    memset(_aTab, 0, _NbFactories*sizeof(double));
+  double m = _pInstance->DistanceCF()(iClient,0);
+  int j;
+  for(j = 1; j < _pInstance->NbClients(); j++) {
+    m = std::min( _pInstance->DistanceCF()(iClient,j) , m ); 
   }
-}
-
-double Localisation::MinDistance(int Client)
-{
-	double m;
-	// Initialize the minimum to a majorant of the client's line
-	for( int j = 0; j< Testio.getNbClients(); j++)
-	{
-		m= m + _aTab(j);
-	}
-	//find the distance minimum among activated facilities
-	for( int j = 0; j< Testio.getNbClients(); j++)
-	{
-		if (_aTab(j)) {
-			m= min(m,testio.getClientFactoryDistance(Client,j));
-		}
-	}
-	return m;
+  return m;
 }
 
 
-Localisation Localisation::operator Complementation(Localisation Ref,int RowToComplete)
+Localisation Localisation::CreateComplementedLocalisation(int iFactory)
 {
-	//create a localisation identique to the reference
-	Localisation Complemented(Ref.get_NbFactories());
-	for (int j=0;j<NbFactoriesComplemented;j++){
-		Complemented.set(j)=Reference.get(j);
-	}
-	//complement the RowToComplete th row
-	Complemented.set(RowToComplete)=1-Ref.get(RowToComplete);
+  Localisation Complemented(*_pInstance, _aChosenFactories);
+  Complemented.Complement(iFactory);
+  return Complemented;
 }
 
 

@@ -47,7 +47,7 @@ public:
   inline double& operator()(int i, int j);
   inline const double& operator()(int i, int j)const;
   
-private:
+protected:
   int _NbRow;     // Number of rows
   int _NbColumn;  // Number of columns
   double* _aTab;  // Array of double
