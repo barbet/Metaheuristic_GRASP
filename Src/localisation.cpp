@@ -31,6 +31,37 @@ void Localisation::Resize(int iNbFactories)
   }
 }
 
+double Localisation::MinDistance(int Client)
+{
+	double m;
+	// Initialize the minimum to a majorant of the client's line
+	for( int j = 0; j< Testio.getNbClients(); j++)
+	{
+		m= m + _aTab(j);
+	}
+	//find the distance minimum among activated facilities
+	for( int j = 0; j< Testio.getNbClients(); j++)
+	{
+		if (_aTab(j)) {
+			m= min(m,testio.getClientFactoryDistance(Client,j));
+		}
+	}
+	return m;
+}
+
+
+Localisation Localisation::operator Complementation(Localisation Ref,int RowToComplete)
+{
+	//create a localisation identique to the reference
+	Localisation Complemented(Ref.get_NbFactories());
+	for (int j=0;j<NbFactoriesComplemented;j++){
+		Complemented.set(j)=Reference.get(j);
+	}
+	//complement the RowToComplete th row
+	Complemented.set(RowToComplete)=1-Ref.get(RowToComplete);
+}
+
+
 void Localisation::Construction()
 {
   // TODO

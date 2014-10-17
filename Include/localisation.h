@@ -7,6 +7,7 @@
 
 #ifndef LOCALISATION_H
 #define LOCALISATION_H
+#include <algorithm>
 
 
 class Localisation
@@ -18,6 +19,10 @@ public:
    */
   Localisation(int iNbFactories = 0);
   
+   /** Creation of the same localisation, the ith boolean being complemented */
+  Localisation operator Complementation(Localisation Ref,int RowToComplete)
+
+
   /** Destructor */
   ~Localisation();
   
@@ -30,6 +35,13 @@ public:
   /** Construction of the localisation */
   void Construction();
   
+  /** Gives the distance between a client and the closest factory of the localisation */
+  double MinDistance(int Client);
+
+
+
+
+
   /**
    * Search the best localisation in the neighbourhood of current localisation
    * and actualize the current localisation.
