@@ -8,7 +8,7 @@
 #ifndef ARRAY2D_H
 #define ARRAY2D_H
 
-#include <assert.h> // defines the C preprocessor macro assert()
+#include <assert.h>
 
 class Array2d
 {
@@ -25,6 +25,13 @@ public:
   
   /** Destructor */
   ~Array2d();
+  
+  /**
+   * Resize the array. (/!\ DELETE THE WHOLE DATA IN THE ARRAY /!\)
+   * @param iNbRow   : new number of array's rows
+   * @param iNbColumn: new number of array's column
+   */
+  void Resize(int iNbRow, int iNbColumn);
   
   /** Return the number of rows of the array */
   inline int GetNbRow();

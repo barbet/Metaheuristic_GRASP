@@ -6,15 +6,15 @@
 
 
 /** Mets tes tests dedans Tristan :) */
-int Test_Tristan()
+void Test_Tristan()
 {
 }
 
 
 /** Mets tes tests dedans Etienne :) */
-int Test_Etienne()
+void Test_Etienne()
 {
-  Testio myTestio;
+  Testio myTestio("TestCases/Input/cap71.txt");
   printf("Nombre de processeurs : %d \n",omp_get_num_procs());
   printf("Nombre de thread actifs : %d \n",omp_get_num_threads());
   int n;

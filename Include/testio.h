@@ -9,7 +9,7 @@
 #ifndef TESTIO_H
 #define TESTIO_H
 
-#include "array2d.h" // Declaration of 2D-array
+#include "array2d.h"
 #include <string>
 
 
@@ -29,6 +29,8 @@ public:
   ~Testio();
 
 private:
+  int _NbClients;                 // Number of clients
+  int _NbFactories;               // Number of factories
   double* _aImplantationCost;     // Array of implantation costs of factories
   Array2d _ClientFactoryDistance; // Array of distances between clients and factories
 };
