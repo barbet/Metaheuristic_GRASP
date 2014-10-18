@@ -49,9 +49,11 @@ public:
   inline void Complement(int iFactory);
   
   /**
-   * Return the distance between a client and the closest factory of the localisation
+   * Return the distance between a client and the closest chosen factory of the localisation
+   * (Assume that each distance is positive.)
    * @param iClient: index of the client
-   * @return: minimal distance to the factories
+   * @return: minimal distance to the factories if there are chosen factories
+   *          -1 otherwise
    */
   double MinDistance(int iClient);
 

@@ -35,10 +35,19 @@ Localisation::~Localisation()
 
 double Localisation::MinDistance(int iClient)
 {
-  double m = _pInstance->DistanceCF()(iClient,0);
-  int j;
-  for(j = 1; j < _pInstance->NbClients(); j++) {
-    m = std::min( _pInstance->DistanceCF()(iClient,j) , m ); 
+  int nbClients = _pInstance->NbClients();
+  double m = -1; // Minimum
+  int j=0;
+  while (j < nbClients && !_aChosenFactories[j]) {
+    j++;
+  }
+  if (j < nbClients) {
+    m = _pInstance->DistanceCF()(iClient,j);
+    int i;
+    for(i = j; i < nbClients; i++) {
+      if (_aChosenFactories[i])
+        m = std::min( _pInstance->DistanceCF()(iClient,i) , m ); 
+    }
   }
   return m;
 }
