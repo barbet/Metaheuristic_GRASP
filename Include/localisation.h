@@ -56,6 +56,18 @@ public:
    *          -1 otherwise
    */
   double MinDistance(int iClient);
+	
+  /** 
+  *Compute the cost of the localisation 
+  */
+  double Localisation::ComputeLocalisationCost();
+
+  /** Creates an intial factory 
+  *with ony one factory for now (loop to be added)
+  */
+  void Localisation::Construction(Testio &iInstance, int RCLLength);
+
+
 
   /**
    * Search the best localisation in the neighbourhood of current localisation

@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <algorithm>
+#include <Cstdlib>
 
 Localisation::Localisation():
   _pInstance(0),
@@ -53,6 +54,18 @@ double Localisation::MinDistance(int iClient)
 }
 
 
+double Localisation::ComputeLocalisationCost()
+{
+	double Cost=0;
+	int i;
+	for (i = 0;i<_pInstance->NbClients();i++)
+	{
+		Cost=Cost+MinDistance(i);
+	}
+	return Cost;
+}
+
+
 Localisation Localisation::CreateComplementedLocalisation(int iFactory)
 {
   Localisation Complemented(*_pInstance, _aChosenFactories);
@@ -61,13 +74,40 @@ Localisation Localisation::CreateComplementedLocalisation(int iFactory)
 }
 
 
-void Localisation::Construction()
+void Localisation::Construction(Testio &iInstance, int RCLLength)
 {
-  // TODO
+  Localisation MyLoc(iInstance);
+  int i;
+  int j;
+  int k;
+  double *Cost=new double[_pInstance->NbClients()]; 
+  array2d Candidates(RCLLength,2); //contains the better factories and the corresponding cost
+  for (i=0; i<_pInstance->NbClients();i++)
+  {
+	Cost(i)=(MyLoc.Complement(i)).ComputeLocalisationCost(); //cost of the solution with the ith factories open
+	MyLoc.Complement(i); // reset MyLoc
+  }
+ for(i=0; i<_pInstance->NbClients();i++) // Compute the table of candidates (the rcllegth better factories and their cost)
+ {
+	 j=0;
+	 while (j<RCLLength && Cost(i)<Candidates(2,j) ) j++;
+	 if j=RCLLength continue;
+	 for (k=j+1;k<RCLLength;k++)
+	 {
+		 Candidates(1,k)=Candidates(1,k-1);
+		 Candidates(2,k)=Candidates(2,k-1);
+	 }
+	 Candidates(1,j)=i;
+	 Candidates(2,j)=Cost(i);
+}
+j=rand()%RCLLength; // draw a factory amongst the rcllength best
+MyLoc.Complement(j);
+
 }
 
 void Localisation::NeighbourhoodSearch()
 {
   // TODO
 }
+
 
