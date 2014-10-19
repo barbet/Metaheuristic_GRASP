@@ -62,8 +62,9 @@ public:
 
   /**
    * Creates an intial factory with ony one factory for now (loop to be added)
+   * @param iRCLLenght: Lenght of restricted candidate list
    */
-  void Construction(Testio &iInstance, int RCLLength);
+  void Construction(int iRCLLength);
 
   /**
    * Search the best localisation in the neighbourhood of current localisation
@@ -72,8 +73,10 @@ public:
   void NeighbourhoodSearch();
   
 protected:
-  Testio* _pInstance;       // Instance of the problem
-  bool* _aChosenFactories;  // Array of chosen factories
+  Testio* _pInstance;             // Instance of the problem
+  bool* _aChosenFactories;        // Array of chosen factories
+  int _LastAddedFactory;          // Last factory added during the greedy construction
+  double _ActualLocalisationCost; // Cost of the localisation
 };
 
 

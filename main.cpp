@@ -1,13 +1,18 @@
 #include <stdio.h>   // Standard Input/Output Header
 #include <stdlib.h>  // C Standard General Utilities Library
 #include <omp.h>     // Open Multi-Processing Library
-
+#include <algorithm>
+#include <iostream>
 #include "testio.h"  // Test Input/Output Header
+#include "localisation.h"
 
 
 /** Mets tes tests dedans Tristan :) */
 void Test_Tristan()
 {
+  Testio myTestio("TestCases/Input/cap71.txt");
+  Localisation myLoc(myTestio);
+  myLoc.Construction(3);
 }
 
 

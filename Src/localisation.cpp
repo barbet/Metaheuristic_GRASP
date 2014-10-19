@@ -7,14 +7,18 @@
 
 Localisation::Localisation():
   _pInstance(0),
-  _aChosenFactories(0)
+  _aChosenFactories(0),
+  _LastAddedFactory(-1),
+  _ActualLocalisationCost(-1)
 {
 }
 
 
 Localisation::Localisation(Testio &iInstance, bool* iChosenFactories):
   _pInstance(&iInstance),
-  _aChosenFactories(0)
+  _aChosenFactories(0),
+  _LastAddedFactory(-1),
+  _ActualLocalisationCost(-1)
 {
   int nbFactories = _pInstance->NbFactories();
   if (nbFactories) {
@@ -37,16 +41,15 @@ Localisation::~Localisation()
 
 double Localisation::MinDistance(int iClient)
 {
-  int nbClients = _pInstance->NbClients();
   double m = -1; // Minimum
   int j=0;
-  while (j < nbClients && !_aChosenFactories[j]) {
+  while (j < _pInstance->NbFactories() && !_aChosenFactories[j]) {
     j++;
   }
-  if (j < nbClients) {
+  if (j < _pInstance->NbFactories()) {
     m = _pInstance->DistanceCF()(iClient,j);
     int i;
-    for(i = j; i < nbClients; i++) {
+    for(i = j; i < _pInstance->NbFactories(); i++) {
       if (_aChosenFactories[i])
         m = std::min( _pInstance->DistanceCF()(iClient,i) , m ); 
     }
@@ -74,36 +77,78 @@ Localisation Localisation::CreateComplementedLocalisation(int iFactory)
 }
 
 
-void Localisation::Construction(Testio &iInstance, int RCLLength)
+void Localisation::Construction(int iRCLLength)
 {
-  Localisation MyLoc(iInstance);
-  double *Cost=new double[_pInstance->NbClients()]; 
-  Array2d Candidates(RCLLength,2); //contains the better factories and the corresponding cost
+  bool stop = false;
+  // Array of the cost of adding each factory
+  double *Cost=new double[_pInstance->NbClients()];
+  // Array containing the best candidates among the factories
+  int* Candidates = new int[iRCLLength];
 
-  int i;
-  for (i=0; i<_pInstance->NbClients(); i++)
+  while (!stop)
   {
-    MyLoc.Complement(i);
-    Cost[i]=MyLoc.ComputeLocalisationCost(); //cost of the solution with the ith factories open
-    MyLoc.Complement(i); // reset MyLoc
-  }
+    // Cost of the actual localisation of factories
+    _ActualLocalisationCost = ComputeLocalisationCost();
+    // Reset the array of the cost of adding each factory
+    memset(Cost, 0, _pInstance->NbClients()*sizeof(double));
 
-  for(i=0; i<_pInstance->NbClients(); i++) // Compute the table of candidates (the rcllegth better factories and their cost)
-  {
-    int j = 0;
-    while (j<RCLLength && Cost[i]<Candidates(2,j) ) j++;
-    if (j==RCLLength) continue;
-    int k;
-    for (k = j+1; k < RCLLength; k++)
+    //-- Compute cost of adding factory i
+    int i;
+    for (i=0; i<_pInstance->NbClients(); i++)
     {
-      Candidates(1,k)=Candidates(1,k-1);
-      Candidates(2,k)=Candidates(2,k-1);
+      if (!_aChosenFactories[i])
+      {
+	Complement(i); // Add factory number i
+	Cost[i] = ComputeLocalisationCost(); //cost of the solution with the ith factories open
+	Complement(i); // Remove factory i
+      }
+      else
+      {
+	Cost[i] = _ActualLocalisationCost;
+      }
     }
-    Candidates(1,j)=i;
-    Candidates(2,j)=Cost[i];
-  }
-  MyLoc.Complement( rand()%RCLLength ); // draw a factory amongst the rcllength best
 
+    //-- Search of the best candidates that improve the localisation (iRCLLength candidates)
+    if (_LastAddedFactory==-1) { // Initialisation of first loop with the highest cost
+      int IdxMaxCost = 0;
+      for (i = 0; i < _pInstance->NbClients(); i++) {
+	if (Cost[IdxMaxCost] < Cost[i])
+	  IdxMaxCost = i;
+      }
+      int j;
+      for (j = 0; j < iRCLLength; j++) {
+	Candidates[j] = IdxMaxCost;
+      }
+    }
+    else { // Initialisation of other loops with the last change
+      int j;
+      for (j = 0; j < iRCLLength; j++) {
+	Candidates[j] = _LastAddedFactory;
+      }
+    }
+
+    for(i=0; i<_pInstance->NbClients(); i++) // Compute the table of candidates (the iRCLLength better factories)
+    {
+      int j = 0;
+      while (j<iRCLLength && Cost[i]>Cost[Candidates[j]] ) j++;
+      if (j==iRCLLength) continue;
+      int k;
+      for (k = iRCLLength-1; k > j; k--) {
+	Candidates[k]=Candidates[k-1];
+      }
+      Candidates[j]=i;
+    }
+    int IdxFactoryToAdd = rand()%iRCLLength;
+    if (_aChosenFactories[IdxFactoryToAdd])
+      stop = true;
+    else
+      Complement( rand()%iRCLLength ); // draw a factory amongst the rcllength best
+  }
+
+  if (Cost)
+    delete [] Cost; Cost = 0;
+  if (Candidates)
+    delete [] Candidates; Candidates = 0;
 }
 
 void Localisation::NeighbourhoodSearch()
