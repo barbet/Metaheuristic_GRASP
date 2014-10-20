@@ -134,7 +134,7 @@ void Localisation::Construction(int iRCLLength)
       if (j==iRCLLength) continue;
       int k;
       for (k = iRCLLength-1; k > j; k--) {
-	Candidates[k]=Candidates[k-1];
+        Candidates[k]=Candidates[k-1];
       }
       Candidates[j]=i;
     }
