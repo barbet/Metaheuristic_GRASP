@@ -69,8 +69,9 @@ public:
   /**
    * Search the best localisation in the neighbourhood of current localisation
    * and actualize the current localisation.
+   * @param iNSize: size of the Neighbourhood
    */
-  void NeighbourhoodSearch();
+  void NeighbourhoodSearch(int iNSize);
   
   /** Print the array of chosen factories */
   void PrintChosenFactories();

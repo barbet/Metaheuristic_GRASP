@@ -6,12 +6,12 @@
 #include <time.h>    //time
 #include "testio.h"  // Test Input/Output Header
 #include "localisation.h"
-
+#include "kcombinationiterator.h"
 
 /** Mets tes tests dedans Tristan :) */
 void Test_Tristan()
 {
-  Testio myTestio("TestCases/Input/capa.txt");
+  Testio myTestio("TestCases/Input/cap71.txt");
   Localisation myLoc(myTestio);
   for (int i = 0; i < myTestio.NbFactories(); i++) {
     std::cout << myTestio.ImplantationCost(i) << std::endl;
@@ -25,6 +25,13 @@ void Test_Tristan()
 void Test_Etienne()
 {
   Testio myTestio("TestCases/Input/cap71.txt");
+  KcombinationIterator I(3,5);
+  while (!I.IsEnded())
+  {
+    std::cout << I(0) << I(1) << I(2) << std::endl;
+    I.Print();
+    ++I;
+  }
   /*printf("Nombre de processeurs : %d \n",omp_get_num_procs());
   printf("Nombre de thread actifs : %d \n",omp_get_num_threads());
   int n;
@@ -40,6 +47,6 @@ int main (int argc, char const *argv[]){
   srand (time(NULL));
   
   Test_Tristan();
-  //Test_Etienne();
+  Test_Etienne();
   return EXIT_SUCCESS;
 }

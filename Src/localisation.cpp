@@ -163,9 +163,37 @@ void Localisation::Construction(int iRCLLength)
 }
 
 
-void Localisation::NeighbourhoodSearch()
+void Localisation::NeighbourhoodSearch(int iNSize)
 {
-  // TODO
+  if (iNSize <= 0 || iNSize > std::min(3, _pInstance->NbFactories()) ) {
+    std::cout << "It is a stupid use of this method !" << std::endl;
+    return;
+  }
+
+  // Cost of the actual localisation of factories
+  _ActualLocalisationCost = ComputeLocalisationCost();
+  // Array of factories to complement
+  int fact1 = 0;
+  int fact2 = 1;
+  int fact3 = 2;
+  for (fact1 = 0; fact1 < _pInstance->NbFactories(); fact1++)
+  {
+    Complement(fact1);
+    if (iNSize > 1)
+    {
+      for (fact2 = fact1+1; fact2 < _pInstance->NbFactories(); fact2++)
+      {
+	Complement(fact2);
+	if (iNSize > 2)
+	{
+	  for (fact3 = fact2+1; fact3 < _pInstance->NbFactories(); fact3++)
+	  {
+	    Complement(fact3);
+	  }
+	}
+      }
+    }
+  }
 }
 
 
