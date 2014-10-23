@@ -53,7 +53,7 @@ public:
    * (Assume that each distance is positive.)
    * @param iClient: index of the client
    * @return: minimal distance to the factories if there are chosen factories
-   *          -1 otherwise
+   *          +infinity otherwise
    */
   double MinDistance(int iClient);
 	
@@ -70,8 +70,16 @@ public:
    * Search the best localisation in the neighbourhood of current localisation
    * and actualize the current localisation.
    * @param iNSize: size of the Neighbourhood
+   * @return: true if a better solution was found
+   *          false otherwise
    */
-  void NeighbourhoodSearch(int iNSize);
+  bool NeighbourhoodSearch(int iNSize);
+  
+  /**
+   * Perform the whole local search and actualize the localisation
+   * @param iMaxSize: maximal size of the neighbourhood size (hamming distance)
+   */
+  void LocalSearchAlgorithm(int iMaxSize);
   
   /** Print the array of chosen factories */
   void PrintChosenFactories();

@@ -4,7 +4,13 @@
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <assert.h>
 #include "array2d.h"
+#include "kcombinationiterator.h"
+
+#ifndef INFINITY
+#define INFINITY 1e+50
+#endif
 
 Localisation::Localisation():
   _pInstance(0),
@@ -42,7 +48,7 @@ Localisation::~Localisation()
 
 double Localisation::MinDistance(int iClient)
 {
-  double m = -1; // Minimum
+  double m = INFINITY; // Minimum
   int j=0;
   while (j < _pInstance->NbFactories() && !_aChosenFactories[j]) {
     j++;
@@ -86,6 +92,7 @@ Localisation Localisation::CreateComplementedLocalisation(int iFactory)
 
 void Localisation::Construction(int iRCLLength)
 {
+  assert(iRCLLength>0);
   bool stop = false;
   // Array of the cost of adding each factory
   double *Cost=new double[_pInstance->NbFactories()];
@@ -163,35 +170,77 @@ void Localisation::Construction(int iRCLLength)
 }
 
 
-void Localisation::NeighbourhoodSearch(int iNSize)
+bool Localisation::NeighbourhoodSearch(int iNSize)
 {
   if (iNSize <= 0 || iNSize > std::min(3, _pInstance->NbFactories()) ) {
     std::cout << "It is a stupid use of this method !" << std::endl;
-    return;
+    return false;
   }
+
+  bool FindABetterSolution = false;
 
   // Cost of the actual localisation of factories
   _ActualLocalisationCost = ComputeLocalisationCost();
-  // Array of factories to complement
-  int fact1 = 0;
-  int fact2 = 1;
-  int fact3 = 2;
-  for (fact1 = 0; fact1 < _pInstance->NbFactories(); fact1++)
+  // Best neighbour of current location
+  int* BestNeighbour = new int[iNSize];
+  int i;
+  for (i = 0; i < iNSize; i++)
+    BestNeighbour[i] = -1;
+
+  // Iterator on solution of the neighbourhood
+  KcombinationIterator NeighbourhoodIt(iNSize, _pInstance->NbFactories());
+  while (!NeighbourhoodIt.IsEnded())
   {
-    Complement(fact1);
-    if (iNSize > 1)
+    int j;
+    for (j = 0; j < iNSize; j++) // Complement some factories to get a solution in the neighbourhood
+      Complement(NeighbourhoodIt(j));
+    int NewLocalisationCost = ComputeLocalisationCost(); // Compute the cost of the solution
+    if (NewLocalisationCost < _ActualLocalisationCost)
+    { // Stock the solution if it is better
+      for (j = 0; j < iNSize; j++)
+	BestNeighbour[j] = NeighbourhoodIt(j);
+      _ActualLocalisationCost = NewLocalisationCost;
+    }
+    for (j = 0; j < iNSize; j++) // Reset the localisation to initial value
+      Complement(NeighbourhoodIt(j));
+
+    ++NeighbourhoodIt;
+  }
+
+  // Change the localisation to the best localisation in the neighbourhood
+  if (BestNeighbour[0] != -1)
+  {
+    int j;
+    for (j = 0; j < iNSize; j++)
+      Complement(BestNeighbour[j]);
+    FindABetterSolution = true;
+  }
+
+  if (BestNeighbour)
+    delete [] BestNeighbour; BestNeighbour = 0;
+
+  return FindABetterSolution;
+}
+
+
+void Localisation::LocalSearchAlgorithm(int iMaxSize)
+{
+  int NeighbourhoodSize = 1;
+  while (true)
+  {
+    if (NeighbourhoodSearch(NeighbourhoodSize))
     {
-      for (fact2 = fact1+1; fact2 < _pInstance->NbFactories(); fact2++)
-      {
-	Complement(fact2);
-	if (iNSize > 2)
-	{
-	  for (fact3 = fact2+1; fact3 < _pInstance->NbFactories(); fact3++)
-	  {
-	    Complement(fact3);
-	  }
-	}
-      }
+      NeighbourhoodSize = 1;
+      continue;
+    }
+    else if (NeighbourhoodSize < iMaxSize)
+    {
+      NeighbourhoodSize++;
+      continue;
+    }
+    else
+    {
+      break;
     }
   }
 }

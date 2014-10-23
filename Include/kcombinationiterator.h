@@ -9,6 +9,7 @@
 #define KCOMBINATIONITERATOR_H
 
 #include <vector>
+#include <assert.h>
 
 class KcombinationIterator
 {
@@ -39,7 +40,7 @@ public:
   /** Print the indexes of the k current chosen elements */
   void Print();
   
-  /** Return true while the iterator has not iterate on every element */
+  /** Return false while the iterator has not iterate on every element */
   inline bool IsEnded();
   
 private:
@@ -58,6 +59,7 @@ inline bool KcombinationIterator::IsEnded() {
 }
 
 inline int KcombinationIterator::operator()(int iIdx) {
+  assert(0 <= iIdx && iIdx < _k);
   return _v[iIdx+1];
 }
 
