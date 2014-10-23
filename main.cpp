@@ -11,8 +11,11 @@
 /** Mets tes tests dedans Tristan :) */
 void Test_Tristan()
 {
-  Testio myTestio("TestCases/Input/cap71.txt");
+  Testio myTestio("TestCases/Input/capa.txt");
   Localisation myLoc(myTestio);
+  for (int i = 0; i < myTestio.NbFactories(); i++) {
+    std::cout << myTestio.ImplantationCost(i) << std::endl;
+  }
   myLoc.Construction(5);
   myLoc.PrintChosenFactories();
 }
