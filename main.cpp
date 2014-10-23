@@ -16,7 +16,7 @@ void Test_Tristan()
   for (int i = 0; i < myTestio.NbFactories(); i++) {
     std::cout << myTestio.ImplantationCost(i) << std::endl;
   }
-  myLoc.Construction(1);
+  myLoc.Construction(3);
   myLoc.PrintChosenFactories();
   myLoc.NeighbourhoodSearch(1);
   myLoc.PrintChosenFactories();
