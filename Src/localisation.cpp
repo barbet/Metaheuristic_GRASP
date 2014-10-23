@@ -3,6 +3,7 @@
 #include <string.h>
 #include <algorithm>
 #include <cstdlib>
+#include <iostream>
 #include "array2d.h"
 
 Localisation::Localisation():
@@ -47,11 +48,13 @@ double Localisation::MinDistance(int iClient)
     j++;
   }
   if (j < _pInstance->NbFactories()) {
-    m = _pInstance->DistanceCF()(iClient,j);
+    m = _pInstance->DistanceCF(iClient,j);
     int i;
     for(i = j; i < _pInstance->NbFactories(); i++) {
-      if (_aChosenFactories[i])
-        m = std::min( _pInstance->DistanceCF()(iClient,i) , m ); 
+      if (_aChosenFactories[i]){
+	double dist = _pInstance->DistanceCF(iClient,i);
+        m = std::min( dist , m ); 
+      }
     }
   }
   return m;
@@ -62,7 +65,11 @@ double Localisation::ComputeLocalisationCost()
 {
   double Cost=0;
   int i;
-  for (i = 0; i<_pInstance->NbClients(); i++) {
+  for (i = 0; i < _pInstance->NbFactories(); i++) {
+    if (_aChosenFactories[i])
+      Cost = Cost + _pInstance->ImplantationCost(i);
+  }
+  for (i = 0; i < _pInstance->NbClients(); i++) {
     Cost=Cost+MinDistance(i);
   }
   return Cost;
@@ -81,7 +88,7 @@ void Localisation::Construction(int iRCLLength)
 {
   bool stop = false;
   // Array of the cost of adding each factory
-  double *Cost=new double[_pInstance->NbClients()];
+  double *Cost=new double[_pInstance->NbFactories()];
   // Array containing the best candidates among the factories
   int* Candidates = new int[iRCLLength];
 
@@ -90,11 +97,11 @@ void Localisation::Construction(int iRCLLength)
     // Cost of the actual localisation of factories
     _ActualLocalisationCost = ComputeLocalisationCost();
     // Reset the array of the cost of adding each factory
-    memset(Cost, 0, _pInstance->NbClients()*sizeof(double));
+    memset(Cost, 0, _pInstance->NbFactories()*sizeof(double));
 
     //-- Compute cost of adding factory i
     int i;
-    for (i=0; i<_pInstance->NbClients(); i++)
+    for (i=0; i<_pInstance->NbFactories(); i++)
     {
       if (!_aChosenFactories[i])
       {
@@ -111,7 +118,7 @@ void Localisation::Construction(int iRCLLength)
     //-- Search of the best candidates that improve the localisation (iRCLLength candidates)
     if (_LastAddedFactory==-1) { // Initialisation of first loop with the highest cost
       int IdxMaxCost = 0;
-      for (i = 0; i < _pInstance->NbClients(); i++) {
+      for (i = 0; i < _pInstance->NbFactories(); i++) {
 	if (Cost[IdxMaxCost] < Cost[i])
 	  IdxMaxCost = i;
       }
@@ -123,14 +130,15 @@ void Localisation::Construction(int iRCLLength)
     else { // Initialisation of other loops with the last change
       int j;
       for (j = 0; j < iRCLLength; j++) {
-	Candidates[j] = _LastAddedFactory;
+	Candidates[j] = _LastAddedFactory; // To add only factories which improve the cost
       }
     }
 
-    for(i=0; i<_pInstance->NbClients(); i++) // Compute the table of candidates (the iRCLLength better factories)
+    for(i=0; i<_pInstance->NbFactories(); i++) // Compute the table of candidates (the iRCLLength better factories)
     {
       int j = 0;
-      while (j<iRCLLength && Cost[i]>Cost[Candidates[j]] ) j++;
+      while (j<iRCLLength && Cost[i]>Cost[Candidates[j]] )
+	j++;
       if (j==iRCLLength) continue;
       int k;
       for (k = iRCLLength-1; k > j; k--) {
@@ -139,10 +147,13 @@ void Localisation::Construction(int iRCLLength)
       Candidates[j]=i;
     }
     int IdxFactoryToAdd = rand()%iRCLLength;
-    if (_aChosenFactories[IdxFactoryToAdd])
+    if (_aChosenFactories[Candidates[IdxFactoryToAdd]])
       stop = true;
     else
-      Complement( rand()%iRCLLength ); // draw a factory amongst the rcllength best
+    {
+      Complement( Candidates[IdxFactoryToAdd] ); // draw a factory amongst the rcllength best
+      _LastAddedFactory = Candidates[IdxFactoryToAdd];
+    }
   }
 
   if (Cost)
@@ -151,9 +162,20 @@ void Localisation::Construction(int iRCLLength)
     delete [] Candidates; Candidates = 0;
 }
 
+
 void Localisation::NeighbourhoodSearch()
 {
   // TODO
 }
 
+
+void Localisation::PrintChosenFactories()
+{
+  int i;
+  std::cout << "Chosen factories : (cost " << ComputeLocalisationCost() << ")" << std::endl;
+  for (i = 0; i <_pInstance->NbFactories(); i++) {
+    std::cout << _aChosenFactories[i] << " ";
+  }
+  std::cout << std::endl;
+}
 

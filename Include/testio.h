@@ -11,6 +11,7 @@
 
 #include "array2d.h"
 #include <string>
+#include <assert.h>
 
 
 class Testio
@@ -34,11 +35,18 @@ public:
   /** Return the number of factories */
   inline int NbFactories();
   
-  /** Return the array of implantation costs of factories */
-  inline double* ImplantationCost();
+  /**
+   * Return the array of implantation costs of factories
+   * @param iFactory: index of the factory implanted
+   */
+  inline double ImplantationCost(int iFactory);
   
-  /** Return the double array of distance between clients and factories */
-  inline Array2d DistanceCF();
+  /**
+   * Return the double array of distance between clients and factories
+   * @param iClient : index of the client
+   * @param iFactory: index of the factory
+   */
+  inline double DistanceCF(int iClient, int iFactory);
   
 protected:
   int _NbClients;                 // Number of clients
@@ -60,12 +68,13 @@ inline int Testio::NbFactories() {
   return _NbFactories;
 }
 
-inline double* Testio::ImplantationCost() {
-  return _aImplantationCost;
+inline double Testio::ImplantationCost(int iFactory) {
+  assert(0 <= iFactory && iFactory < _NbFactories);
+  return _aImplantationCost[iFactory];
 }
 
-inline Array2d Testio::DistanceCF() {
-  return _ClientFactoryDistance;
+inline double Testio::DistanceCF(int iClient, int iFactory) {
+  return _ClientFactoryDistance(iClient, iFactory);
 }
 
 

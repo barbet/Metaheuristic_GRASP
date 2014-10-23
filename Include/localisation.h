@@ -72,6 +72,9 @@ public:
    */
   void NeighbourhoodSearch();
   
+  /** Print the array of chosen factories */
+  void PrintChosenFactories();
+  
 protected:
   Testio* _pInstance;             // Instance of the problem
   bool* _aChosenFactories;        // Array of chosen factories
