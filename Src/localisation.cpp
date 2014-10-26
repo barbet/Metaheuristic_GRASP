@@ -194,7 +194,7 @@ bool Localisation::NeighbourhoodSearch(int iNSize)
     int j;
     for (j = 0; j < iNSize; j++) // Complement some factories to get a solution in the neighbourhood
       Complement(NeighbourhoodIt(j));
-    int NewLocalisationCost = ComputeLocalisationCost(); // Compute the cost of the solution
+    double NewLocalisationCost = ComputeLocalisationCost(); // Compute the cost of the solution
     if (NewLocalisationCost < _ActualLocalisationCost)
     { // Stock the solution if it is better
       for (j = 0; j < iNSize; j++)

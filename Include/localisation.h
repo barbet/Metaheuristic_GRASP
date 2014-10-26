@@ -48,6 +48,12 @@ public:
    */
   inline void Complement(int iFactory);
   
+ /**
+   * Return if the i factory is selected
+   * @param iFactory: Number of the factory to check
+   */
+  inline bool& operator()(int i);
+
   /**
    * Return the distance between a client and the closest chosen factory of the localisation
    * (Assume that each distance is positive.)
@@ -100,5 +106,11 @@ inline void Localisation::Complement(int iFactory) {
   assert(0 <= iFactory && iFactory < _pInstance->NbFactories());
   _aChosenFactories[iFactory] = !_aChosenFactories[iFactory];
 }
+inline bool& Localisation::operator()(int i)
+{
+  assert(0<=i && i<_pInstance->NbFactories());
+  return _aChosenFactories[i];
+}
+
 
 #endif
